@@ -1,25 +1,51 @@
-import React, { FC } from "react";
-import Button from "./Button";
-import { TaskType } from "./App";
+import React, {useState} from 'react';
+import { TaskType } from './Todolist';
+import { FilterValuesType } from './App';
+import Button from './Button';
 
-type TaskListProps = {
+type TaskListPropsType = {
     tasks: Array<TaskType>
-}
-const TaskList: FC<TaskListProps> = (props) => {
-return (
-    <>
-    <ul>
-        <li><input type="checkbox" onChange={()=>{}} checked={props.tasks[0].isDone}/> <span>{props.tasks[0].title}</span></li>
-        <li><input type="checkbox" onChange={()=>{}} checked={props.tasks[1].isDone}/> <span>{props.tasks[1].title}</span></li>
-        <li><input type="checkbox" onChange={()=>{}} checked={props.tasks[2].isDone}/> <span>{props.tasks[2].title}</span></li>
-    </ul>
-    <div>
-        <Button title={'All'}/>
-        <Button title={'Active'}/>
-        <Button title={'Completed'}/>
-    </div>
-    </>
-)
-}
+    isCheked: (id: string) => void
+    removeTask: (taskId: string) => void
+    deleteTasks: () => void
+} 
+export const TaskList: React.FC<TaskListPropsType> = (props) => {
+    let tasksForTodolist = props.tasks;
+    let [filter, setFilter] = useState<FilterValuesType>("all");
 
-export default TaskList
+    if (filter === "active") {
+        tasksForTodolist = props.tasks.filter(t => t.isDone === false);
+    }
+    if (filter === "completed") {
+        tasksForTodolist = props.tasks.filter(t => t.isDone === true);
+    }
+    if (filter === "three tasks") {
+        tasksForTodolist = props.tasks.filter((t,i) => i <= 2);
+    }
+    
+    const onClickCheked = (id: string) => {
+        props.isCheked(id)
+    }
+   
+    const taskList = props.tasks.length 
+    ? tasksForTodolist.map(t => <li key={t.id}>
+            <input onChange={()=>onClickCheked(t.id)} type="checkbox" checked={t.isDone}/>
+            <span>{t.title}</span>
+            <Button callback={() => props.removeTask(t.id)} name='x'/>
+        </li>)
+    :<li>List empty</li>
+
+
+    return (
+      <>
+        <ul>{taskList}</ul>
+        <div>
+          <Button name='Delete all the Tasks' callback={() => props.deleteTasks()} />
+          <Button name='All' callback={() => setFilter("all")} />
+          <Button name='Active' callback={() => setFilter("active")} />
+          <Button name='Completed' callback={() => setFilter("completed")} />
+          <Button name='first three tasks' callback={() => setFilter("three tasks")} />
+        </div>
+      </>
+    );
+}

@@ -1,14 +1,16 @@
-import React from "react";
+import React from "react"
 
-type ButtonPropsType = {
-    title: string
+type BottonPropsType = {
+    name: string
+    callback: () => void
+    disabled?: boolean
 }
-const Button = (props: ButtonPropsType): JSX.Element => {
-return (
-    <button>
-        {props.title}
-    </button>
-)
+const Button: React.FC<BottonPropsType> = (props) => {
+    const onClickHandler = () => {
+        props.callback()
+    }
+    return (
+        <button disabled={props.disabled} onClick={onClickHandler}>{props.name}</button>
+    )
 }
-
 export default Button
